@@ -1,0 +1,27 @@
+1.	Monteserin, Juan Jose Marron. "Multi sensor system for pedestrian tracking and activity recognition in indoor environments." University of South Florida, 2014.
+
+    안드로이드 스마트폰을 이용하여 동작을 특정합니다.
+
+2.	Beauregard, Stephane, and Harald Haas. "Pedestrian dead reckoning: A basis for personal positioning." Proceedings of the 3rd Workshop on Positioning, Navigation and Communication. 2006.
+
+    헬멧에 부착한 가속도계를 통하여 걸음 수를 측정합니다. 그리고 딥 러닝을 이용하여 이동거리를 예측합니다.
+
+3.	Sun, Zuolei, et al. "Activity classification and dead reckoning for pedestrian navigation with wearable sensors." Measurement science and technology 20.1 (2008): 015203.
+
+    운동에너지를 통한 동작 특정이란 큰 틀은 같지만, 얻은 데이터를 처리 할 때 PNN을 사용하여 동작을 특정하게 됩니다.
+
+4.	Pratama, Azkario Rizky, and Risanuri Hidayat. "Smartphone-based pedestrian dead reckoning as an indoor positioning system." System Engineering and Technology (ICSET), 2012 International Conference on. IEEE, 2012.
+
+    스마트폰을 이용하여 가속도 데이터를 얻고, 그 데이터를 통하여 걸음 수를 측정합니다. 그리고 걸음 당 거리를 구하기 위하여 3가지 방법을 도입하여 그 차이를 비교합니다. Calibration 과정 없이, 최고점을 찾는 형식으로 걸음을 측정하였습니다.
+
+5.	Ojeda, Lauro, and Johann Borenstein. "Personal dead-reckoning system for GPS-denied environments." Safety, Security and Rescue Robotics, 2007. SSRR 2007. IEEE International Workshop on. IEEE, 2007.
+
+    시각화를 통하여 계단 위치를 파악하는 예제가 수록되어 있습니다. 
+
+6.	Jimenez, Antonio R., et al. "A comparison of pedestrian dead-reckoning algorithms using a low-cost MEMS IMU." Intelligent Signal Processing, 2009. WISP 2009. IEEE International Symposium on. IEEE, 2009.
+
+    신발에 부착한 가속도계로 걸음 수를 측정합니다. 그리고 걸음 당 거리를 추측하는 두 알고리즘을 도입하여서 예상 거리를 추측합니다. 
+
+7. Abdulrahim, Khairi, et al. "Understanding the performance of zero velocity updates in MEMS-based pedestrian navigation." International Journal of Advancements in Technology 5.2 (2014): 53-60.
+
+    ZUPT에 관한 설명입니다.
