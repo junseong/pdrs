@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 class data:
     def __init__(self):
         self.gyro=[]
@@ -18,8 +16,29 @@ class data:
             self.temp.append(line[9])
             self.pres.append(line[10])
 
+    def average(data, num):
+        result=0
+        for i in range(num):
+            result=result+data[i]
+        return result/num
+
+    def calibData(self):
+        self.gyroCalib=[]
+        self.acceCalib=[]
+        self.magnCalib=[]
+        self.tempCalib=[]
+        self.presCalib=[]
+        getData("E:/test.txt")
+        
+        
+
+
+    def process(self):
+        pass
+
 
 if __name__=="__main__":
     test=data()
     count=test.getData("E:/test.txt")
     print(test.gyro)
+    print(test.gyroCalib)
