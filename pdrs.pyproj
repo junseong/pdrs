@@ -22,7 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="getData.py" />
-    <Compile Include="motion_detect.py" />
     <Compile Include="pdrs.py" />
   </ItemGroup>
   <ItemGroup>
