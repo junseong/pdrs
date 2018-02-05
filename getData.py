@@ -1,4 +1,7 @@
 import math
+import matplotlib.pyplot as plt
+
+
 class data:
     def __init__(self):
         self.gyro=[]
@@ -10,8 +13,12 @@ class data:
         self.acceCalib=[]
         self.magnCalib=[]
         self.processedGyro=[] # MAF / LPF
+        self.thresholdGyro=[]
         self.processedAcce=[] # MAF / LPF
+        self.thresholdAcce=[]
         self.processedMagn=[] # MAF / LPF
+        self.thresholdMagn=[]
+        
         self.processedPres=[] # LPF
         self.processedTemp=[]
         self.count=0
@@ -75,30 +82,60 @@ class data:
             calibrationHandler.write(str(gyro[0])+'/'+str(gyro[1])+'/'+str(gyro[2])+'\n')
             calibrationHandler.write(str(acce[0])+'/'+str(acce[1])+'/'+str(acce[2])+'\n')
             calibrationHandler.write(str(magn[0])+'/'+str(magn[1])+'/'+str(magn[2]))
-            self.calibData(self)
+            self.calibData(trashvalue)
 
-    def MAF(self, data, calib):
-        
+    def MAF(self, data, calib, windowsize):
+        processed=[]
+        for i in range(self.count):
+            sum=0
+            if i<=windowsize:
+                for j in range(0,i*2):
+                    energy=math.sqrt(data[j][0]**2+data[j][1]**2+data[j][2]**2)
+                    sum=sum+(energy-calib)**2
+                movingavg=sum/(i*2+1)
+                processed.append(movingavg)    
+            elif i>windowsize and i+windowsize<=self.count:
+                for j in range(i-windowsize, i+windowsize):
+                    energy=math.sqrt(data[j][0]**2+data[j][1]**2+data[j][2]**2)
+                    sum=sum+(energy-calib)**2
+                movingavg=sum/(windowsize*2+1)
+                processed.append(movingavg)
+            else:
+                for j in range(self.count-i*2,self.count):
+                    energy=math.sqrt(data[j][0]**2+data[j][1]**2+data[j][2]**2)
+                    sum=sum+(energy-calib)**2
+                movingavg=sum/((self.count-i)*2+1)
+                processed.append(movingavg)
+        return processed
+
+    def LPF(self, data, calib):
+
+        pass
+    
+    
+    def threshold(self, data, value):
+
         pass
 
 
     def process(self):
-        gyroEnergy=[]
-        for i in range(self.count):
-            gyroTemp=0
-            for j in range(3):
-                gyroTemp=gyroTemp+self.gyro[i][j]**2
-            gyroEnergy.append(math.sqrt(gyroTemp))
-        self.MAF(gyroEnergy, gyroBias)
+        #gyro sensor part
+        self.processedGyro=self.MAF(self.gyro, self.gyroBias, 10)
+        #acce sensor part
+        self.processedAcce=self.MAF(self.acce, self.acceBias, 10)
+        #magn sensor part
 
-    def threshold(self, data, value):
-        pass
-            
+
+        #temp sensor part
+
+
+        #pres sensor part
+
+
     def showRaw(self):
         count=[]
         for i in range(self.count):
             count.append(i*0.01)
-        import matplotlib.pyplot as plt
         plt.figure(num = 'Raw Data /// Blue : x, Orange : y, Green : z', figsize = (9,6))
         #gyro 최대 값 +-250
         plt.subplot(321)
@@ -133,9 +170,42 @@ class data:
         #show
         plt.show()
 
+    def showProcessd(self):
+        count=[]
+        for i in range(self.count):
+            count.append(i*0.01)
+        plt.figure(num = 'Processed Data /// Blue : x, Orange : y, Green : z', figsize = (9,6))
+        #gyro 에너지값
+        plt.subplot(221)
+        plt.plot(count, self.processedGyro)
+        plt.ylim(0, 8000)
+        plt.xlabel('time')
+        plt.ylabel('Gyro energy')
+        #acce 최대 값 +- 2
+        plt.subplot(222)
+        plt.plot(count, self.processedAcce)
+        plt.ylim(0, 0.0512)
+        plt.xlabel('time')
+        plt.ylabel('Acce energy')
+        #magn 최대 값 +- 2        
+        plt.subplot(223)
+        plt.plot(count, self.magn)
+        plt.ylim(-2, 2)
+        plt.xlabel('time')
+        plt.ylabel('gauss')
+        #pres
+        plt.subplot(224)
+        plt.plot(count, self.pres)
+        plt.ylim(900, 1100)
+        plt.xlabel('time')
+        plt.ylabel('Hpa')
+        #show
+        plt.show()
+
 if __name__=="__main__":
     test=data()
     test.getData("E:/test.txt")
     test.calibData()
+    test.process()
     test.showRaw()
-    print(test.gyroCalib)
+    test.showProcessd()
