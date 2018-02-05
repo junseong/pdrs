@@ -74,12 +74,12 @@ class data:
             calibrationHandler.write(str(magn[0])+'/'+str(magn[1])+'/'+str(magn[2]))
             self.calibData(self)
             
-    def show(self):
+    def showRaw(self):
         count=[]
         for i in range(self.count):
             count.append(i*0.01)
         import matplotlib.pyplot as plt
-        plt.figure(figsize=(9,6))
+        plt.figure(num = 'Blue : x, Orange : y, Green : z', figsize = (9,6))
         #gyro 최대 값 +-250
         plt.subplot(321)
         plt.plot(count, self.gyro)
@@ -117,4 +117,4 @@ if __name__=="__main__":
     test=data()
     test.getData("E:/test.txt")
     test.calibData()
-    test.show()
+    test.showRaw()

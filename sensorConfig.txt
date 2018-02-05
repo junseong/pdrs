@@ -1,3 +1,43 @@
+각 센서별 데이터 출력 주기 및 필요 시간
+
+bmp180(온도) : ms기준, 좌측은 Hz 변환값
+	222Hz(4.5ms)
+bmp180(기압) -> 온도를 측정하고 측정시작해야 함
+	222.2Hz(4.5ms)
+	133.3Hz(7.5ms)
+	74.1Hz(13.5ms)
+	39.2Hz(25.5ms)
+BMP 총합 -> 111.1Hz(9ms), 83.3Hz(12ms), 55.6Hz(18ms), 33.3Hz(30ms)
+			오차의 경우 0.06hPa ~ 0.02hPa
+
+L3G
+	760Hz(1.3ms)
+	380Hz(2.6ms)
+	190Hz(5.2ms)
+	95Hz(10.5ms)
+
+LSM(가속도)
+	1600Hz(0.6ms)
+	800Hz(1.2ms)
+	400Hz(2.5ms)
+	200Hz(5ms)
+	100Hz(10ms)
+	50Hz(20ms)
+	25Hz(40ms)
+	12.5Hz(80ms)
+	6.25Hz(160ms)
+	3.125Hz(320ms)
+
+LSM(자기)
+	100Hz(10ms)
+	50Hz(20ms)
+	25Hz(40ms)
+	12.5Hz(80ms)
+	6.25Hz(160ms)
+	3.125Hz(320ms)
+
+종합 : 가장 빠른 데이터 출력 주기는 기압+압력, 자기가 9 ~ 10ms 이며, 
+
 L3G
 	감지범위 250/500/2000 dps(degree per second)
 	감도는 각각 8.75/17.50/70 mdps/digit
@@ -286,6 +326,14 @@ BMP180
 	start temp : 2Eh
 	start pressure
 		oversampling = 0 : 32h  -> Ultra low-power
+			conversion time : 4.5ms
+			noise : 0.06hPa
 		oversampling = 1 : 74h  -> Standard
+			conversion time : 7.5ms
+			noise : 0.05hPa
 		oversampling = 2 : B4h  -> High resolution
+			conversion time : 13.5ms
+			noise : 0.04hPa
 		oversampling = 3 : F4h  -> Ultra High resolution
+			conversion time : 25.5ms
+			noise : 0.03hPa
