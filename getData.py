@@ -1,3 +1,4 @@
+import math
 class data:
     def __init__(self):
         self.gyro=[]
@@ -54,14 +55,16 @@ class data:
                 avg=avg+data[i]
             avg=avg/num
             return avg
-        
+
     def calibData(self):
         try:
             calibrationHandler=open('CalibrationData.txt', 'r')
             calibs=calibrationHandler.readlines()
-            self.gyroCalib=calibs[0]
-            self.acceCalib=calibs[1]
-            self.magnCalib=calibs[2]
+            self.gyroCalib=calibs[0].split('/')
+            self.acceCalib=calibs[1].split('/')
+            self.magnCalib=calibs[2].split('/')
+            self.gyroBias=math.sqrt(float(self.gyroCalib[0])**2+float(self.gyroCalib[1])**2+float(self.gyroCalib[2])**2)
+            self.acceBias=math.sqrt(float(self.acceCalib[0])**2+float(self.acceCalib[1])**2+float(self.acceCalib[2])**2)
             return 0
         except:
             print("No calibration data")
@@ -73,13 +76,30 @@ class data:
             calibrationHandler.write(str(acce[0])+'/'+str(acce[1])+'/'+str(acce[2])+'\n')
             calibrationHandler.write(str(magn[0])+'/'+str(magn[1])+'/'+str(magn[2]))
             self.calibData(self)
+
+    def MAF(self, data, calib):
+        
+        pass
+
+
+    def process(self):
+        gyroEnergy=[]
+        for i in range(self.count):
+            gyroTemp=0
+            for j in range(3):
+                gyroTemp=gyroTemp+self.gyro[i][j]**2
+            gyroEnergy.append(math.sqrt(gyroTemp))
+        self.MAF(gyroEnergy, gyroBias)
+
+    def threshold(self, data, value):
+        pass
             
     def showRaw(self):
         count=[]
         for i in range(self.count):
             count.append(i*0.01)
         import matplotlib.pyplot as plt
-        plt.figure(num = 'Blue : x, Orange : y, Green : z', figsize = (9,6))
+        plt.figure(num = 'Raw Data /// Blue : x, Orange : y, Green : z', figsize = (9,6))
         #gyro 최대 값 +-250
         plt.subplot(321)
         plt.plot(count, self.gyro)
@@ -118,3 +138,4 @@ if __name__=="__main__":
     test.getData("E:/test.txt")
     test.calibData()
     test.showRaw()
+    print(test.gyroCalib)
