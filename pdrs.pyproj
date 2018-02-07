@@ -28,6 +28,7 @@
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <Content Include="notes.txt" />
+    <Content Include="paper.txt" />
     <Content Include="sensorConfig.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

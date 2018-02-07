@@ -108,9 +108,13 @@ class data:
                 processed.append(movingavg)
         return processed
 
-    def LPF(self, data, calib):
-
-        pass
+    def LPF(self, data, a):
+        processed=[]
+        processed.append(data[0])
+        for i in range(1, self.count):
+            processed.append(a*data[i-1]+data[i]*(1-a))
+        return processed
+        
     
     
     def threshold(self, data, value):
@@ -121,8 +125,10 @@ class data:
     def process(self):
         #gyro sensor part
         self.processedGyro=self.MAF(self.gyro, self.gyroBias, 10)
+        
         #acce sensor part
         self.processedAcce=self.MAF(self.acce, self.acceBias, 10)
+        self.LPFAcce=self.LPF(self.processedAcce, 0.9)
         #magn sensor part
 
 
@@ -184,15 +190,15 @@ class data:
         #acce 최대 값 +- 2
         plt.subplot(222)
         plt.plot(count, self.processedAcce)
-        plt.ylim(0, 0.0512)
+        plt.ylim(0, 0.02)
         plt.xlabel('time')
-        plt.ylabel('Acce energy')
+        plt.ylabel('MAF Acce')
         #magn 최대 값 +- 2        
         plt.subplot(223)
-        plt.plot(count, self.magn)
-        plt.ylim(-2, 2)
+        plt.plot(count, self.LPFAcce)
+        plt.ylim(0, 0.02)
         plt.xlabel('time')
-        plt.ylabel('gauss')
+        plt.ylabel('LPF Acce')
         #pres
         plt.subplot(224)
         plt.plot(count, self.pres)
