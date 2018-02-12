@@ -27,9 +27,14 @@
   <ItemGroup>
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
-    <Content Include="notes.txt" />
-    <Content Include="paper.txt" />
-    <Content Include="sensorConfig.txt" />
+    <Content Include="text\notes.txt" />
+    <Content Include="text\paperList.txt" />
+    <Content Include="text\sensorConfig.txt" />
+    <Content Include="text\paper.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\" />
+    <Folder Include="text\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

@@ -1,7 +1,6 @@
 import math
 import matplotlib.pyplot as plt
 
-
 class data:
     def __init__(self):
         self.gyro=[]
@@ -18,7 +17,6 @@ class data:
         self.thresholdAcce=[]
         self.processedMagn=[] # MAF / LPF
         self.thresholdMagn=[]
-        
         self.processedPres=[] # LPF
         self.processedTemp=[]
         self.count=0
@@ -30,8 +28,8 @@ class data:
             self.gyro.append(line[0:3])
             self.acce.append(line[3:6])
             self.magn.append(line[6:9])
-            self.temp.append(line[9])
-            self.pres.append(line[10])
+            self.temp.append(float(line[9]))
+            self.pres.append(float(line[10]))
             self.count=self.count+1
         for i in range(len(self.gyro)):
             for j in range(3):
@@ -65,7 +63,7 @@ class data:
 
     def calibData(self):
         try:
-            calibrationHandler=open('CalibrationData.txt', 'r')
+            calibrationHandler=open('./data/CalibrationData.txt', 'r')
             calibs=calibrationHandler.readlines()
             self.gyroCalib=calibs[0].split('/')
             self.acceCalib=calibs[1].split('/')
@@ -83,6 +81,11 @@ class data:
             calibrationHandler.write(str(acce[0])+'/'+str(acce[1])+'/'+str(acce[2])+'\n')
             calibrationHandler.write(str(magn[0])+'/'+str(magn[1])+'/'+str(magn[2]))
             self.calibData(trashvalue)
+
+
+    def dataEnergy(self, data, num):
+        return math.sqrt(data[num][0]**2+data[num][1]**2+data[num][2]**2)
+            
 
     def MAF(self, data, calib, windowsize):
         processed=[]
@@ -114,29 +117,38 @@ class data:
         for i in range(1, self.count):
             processed.append(a*data[i-1]+data[i]*(1-a))
         return processed
-        
-    
     
     def threshold(self, data, value):
-
-        pass
+        result=[]
+        temp=[]
+        for i in range(self.count):
+            if data[i]>value:
+                temp=[data[i], int(1)]
+            else:
+                temp=[data[i], int(0)]
+            result.append(temp)
+        return result
 
 
     def process(self):
         #gyro sensor part
         self.processedGyro=self.MAF(self.gyro, self.gyroBias, 10)
-        
+            
         #acce sensor part
         self.processedAcce=self.MAF(self.acce, self.acceBias, 10)
+        self.LPFAcce=[]
+        for i in range(self.count):
+            self.LPFAcce.append((self.dataEnergy(self.acce, i)-self.acceBias)**2)
+
         self.LPFAcce=self.LPF(self.processedAcce, 0.9)
         #magn sensor part
 
 
         #temp sensor part
-
+        
 
         #pres sensor part
-
+        self.processedPres=self.LPF(self.pres, 0.9)
 
     def showRaw(self):
         count=[]
@@ -201,7 +213,7 @@ class data:
         plt.ylabel('LPF Acce')
         #pres
         plt.subplot(224)
-        plt.plot(count, self.pres)
+        plt.plot(count, self.processedPres)
         plt.ylim(900, 1100)
         plt.xlabel('time')
         plt.ylabel('Hpa')
@@ -210,8 +222,10 @@ class data:
 
 if __name__=="__main__":
     test=data()
-    test.getData("E:/test.txt")
+    test.getData("./data/test.txt")
     test.calibData()
     test.process()
     test.showRaw()
     test.showProcessd()
+    print(test.gyroBias)
+    print(test.acceBias)

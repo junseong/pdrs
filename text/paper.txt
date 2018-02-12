@@ -1,0 +1,26 @@
+1. Motivation
+	- 안전 : 비상상황에서 건물 내 위치 파악
+	- 자원의 효율적 사용 : 스마트 빌딩 + 라우팅(핸드오버)
+	- 보안 : 위치를 통한 잠금 및 잠금 해제
+	- 여가 및 광고 : 위치를 통하여 안내하거나, 광고
+	- 네비게이션 : 길찾기(건물내 동료 찾기도 가능)
+
+2. Contribution
+
+
+3. Background
+
+
+4. Solution
+
+
+5. Experiment, Result, analyze
+
+
+6. Conclusion, summarize
+
+
+# Reference
+	- Monteserin, Juan Jose Marron. "Multi sensor system for pedestrian tracking and activity recognition in indoor environments." University of South Florida, 2014.
+		기본적으로 참고 한 논문
+	- 
