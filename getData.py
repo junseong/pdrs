@@ -23,6 +23,7 @@ class data:
         
     def getData(self, path):
         sd=open(path, 'r')
+        count=0
         for readline in sd.readlines():
             line=readline.split('/')
             self.gyro.append(line[0:3])
@@ -84,7 +85,7 @@ class data:
 
 
     def dataEnergy(self, data, num):
-        return math.sqrt(data[num][0]**2+data[num][1]**2+data[num][2]**2)
+        return math.sqrt(data[num][0]**2+data[num][1]**2+data[num][2]**2) # sqrt시에 부호 생각해 줘야 함 -> 2개의 threshold 를 사용하는 step detection 할 때 중요
             
 
     def MAF(self, data, calib, windowsize):
@@ -133,9 +134,10 @@ class data:
     def process(self):
         #gyro sensor part
         self.processedGyro=self.MAF(self.gyro, self.gyroBias, 10)
+        self.thresholdGyro=self.threshold(self.processedGyro, 2000) # Turn detection threshold 2500
             
         #acce sensor part
-        self.processedAcce=self.MAF(self.acce, self.acceBias, 10)
+        self.processedAcce=self.MAF(self.acce, self.acceBias, 5) # 윈도우 값이 10 일 때 너무 smooth 해지는 결과가 있었음 (두 개의 문턱값 설정에 애로) 5정도로 낮추니 파악하기 용이 하였음
         self.LPFAcce=[]
         for i in range(self.count):
             self.LPFAcce.append((self.dataEnergy(self.acce, i)-self.acceBias)**2)
@@ -196,21 +198,21 @@ class data:
         #gyro 에너지값
         plt.subplot(221)
         plt.plot(count, self.processedGyro)
-        plt.ylim(0, 8000)
+        plt.ylim(0, 50000)
         plt.xlabel('time')
         plt.ylabel('Gyro energy')
         #acce 최대 값 +- 2
         plt.subplot(222)
         plt.plot(count, self.processedAcce)
-        plt.ylim(0, 0.02)
+        plt.ylim(0, 1)
         plt.xlabel('time')
         plt.ylabel('MAF Acce')
         #magn 최대 값 +- 2        
         plt.subplot(223)
-        plt.plot(count, self.LPFAcce)
-        plt.ylim(0, 0.02)
+        plt.plot(count, self.thresholdGyro)
+        plt.ylim(0, 2)
         plt.xlabel('time')
-        plt.ylabel('LPF Acce')
+        plt.ylabel('gyro threshold')
         #pres
         plt.subplot(224)
         plt.plot(count, self.processedPres)
@@ -227,5 +229,3 @@ if __name__=="__main__":
     test.process()
     test.showRaw()
     test.showProcessd()
-    print(test.gyroBias)
-    print(test.acceBias)

@@ -51,14 +51,23 @@ Alzantot, Moustafa, and Moustafa Youssef. "UPTIME: Ubiquitous pedestrian trackin
 Harle, Robert. "A survey of indoor inertial positioning systems for pedestrians." IEEE Communications Surveys and Tutorials 15.3 (2013): 1281-1293.
 	여러 논문들이 각각 어떻게 구성되어있는지 비교하는 논문
 
-J. Scarlet, “Enhancing the Performance of Pedometers Using a Single Accelerometer,” Analog Devices AN-900 Application Note, 2005.
+Judd, Thomas. "A personal dead reckoning module." ION GPS. Vol. 97. 1997.
+	칼만 필터를 사용하여 다른 파라미터 입력 없이 위치를 예측하는 모듈
 
+Jirawimut, Rommanee, et al. "A method for dead reckoning parameter correction in pedestrian navigation system." IEEE Transactions on Instrumentation and Measurement 52.1 (2003): 209-215.
+
+
+J. Scarlet, “Enhancing the Performance of Pedometers Using a Single Accelerometer,” Analog Devices AN-900 Application Note, 2005.
+	사람이 걸을 때 위 아래로 진동운동을 하는데, 그 운동의 가속도를 측정하여서 걸음 거리를 예측
+	한 걸음당 걸음 거리 = 사람마다, 혹은 pace마다의 특성 값(상수) * 알고리즘 결과값
+	이러한 방식으로 구하기 때문에, calibration 이 필요함 -> 실시간 처리에는 부적합 하지만 calibration 단계는 쉬움(이동거리 = k*알고리즘의 결과값들의 합)
+	
 H. Weinberg, “Using the ADXL202 in Pedometer and Personal Navigation Applications,” Analog Devices AN-602 Application Note, 2002.
 
 S. H. Shin, C. G. Park, J. W. Kim, H. S. Hong, J. M. Lee, “Adaptive Step Length Estimation Algorithm Using Low-Cost MEMS Inertial Sensors,” in IEEE Sensors Applications Symposium, 2007.
 
 
-###################################################
+# Deep learning 사용이라 아직 적합하지 않음
 Beauregard, Stephane, and Harald Haas. "Pedestrian dead reckoning: A basis for personal positioning." Proceedings of the 3rd Workshop on Positioning, Navigation and Communication. 2006.
     동기
 		1. 노약자 및 어린이, 재소자, 시각장애인들을 위한 서비스
