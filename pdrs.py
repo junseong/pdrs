@@ -1,7 +1,7 @@
 #init
-import matplotlib  #graph
-import math        #square
-from tkinter import *     #visualize
+import matplotlib  # Graph
+import math        # Square
+from tkinter import *     # Visualization
 from tkinter import ttk
 
 
@@ -66,13 +66,38 @@ from tkinter import ttk
         # POI Point Of Interest
         # Initial position + diff position -> per 10ms
 
-class sensor:
+# Functions
+
+def SIGMA(data, start, end):
+    result=0
+    for i in range(start, end):
+        result=result+data[i]
+    return result
+
+def MAF(data, window):
+    result=[]
+    for i in range(len(data)):
+        if i<=window:
+            result.append(SIGMA(data, i, i*2))
+        if i>window and i+window<=len(data):
+            result.append(SIGMA(data, i-window, i+window))
+        else:
+            result.append(SIGMA(data, i*2-len(data), len(data)))
+    return result
+
+def LPF():
+    pass
+
+def THRESHOLD():
+    pass
+
+class sensor: # Parent class -> x/y/z raw data, result, threshold result
     def __init__(self):
         self.x=[]
         self.y=[]
         self.z=[]
-        self.result=[]
-        self.threshold=[]
+        self.result=[]  # Contain processed data (MAF, LPF)
+        self.threshold=[] # Contain 0 or 1
 
     def get(self, source, position, offset):
         for i in range(len(source)):
@@ -83,25 +108,41 @@ class sensor:
 class Gyro(sensor):
     def __init__(self):
         super().__init__()
-        self.bias=6.9449755432434745
-        self.config=8.75*0.001
+        self.bias=6.9449755432434745 # Bias value
+        self.config=8.75*0.001 # Config 250 dps
 
     def get(self, source):
         super().get(source, 0, self.config)
 
+    def process(self):
+        magnitude=[] # Magnitude of 3-axis gyro raw data
+        for i in range(len(self.x)):
+            magnitude.append(math.sqrt(self.x[i]**2+self.y[i]**2+self.z[i]**2))
+        for i in range(len(self.x)):
+            magnitude[i]=(magnitude[i]-self.bias)**2
+        self.result=MAF(magnitude, 10)
+
 class Acce(sensor):
     def __init__(self):
         super().__init__()
-        self.bias=1.0405649575004565
-        self.config=0.061*0.001
+        self.bias=1.0405649575004565 # Bias value
+        self.config=0.061*0.001 # Config 2 g
 
     def get(self, source):
         super().get(source, 3, self.config)
 
+    def process(self):
+        magnitude=[] # Magnitude of 3-axis acce raw data
+        for i in range(len(self.x)):
+            magnitude.append(math.sqrt(self.x[i]**2+self.y[i]**2+self.z[i]**2))
+        for i in range(len(self.x)):
+            magnitude[i]=(magnitude[i]-self.bias)**2
+        self.result=MAF(magnitude, 10)
+
 class Magn(sensor):
     def __init__(self):
         super().__init__()
-        self.config=0.080*0.001
+        self.config=0.080*0.001 # Config 2 gauss
     
     def get(self, source):
         super().get(source, 6, self.config)
@@ -136,3 +177,6 @@ if __name__=="__main__":
     temp.get(source)
     pres=Pres()
     pres.get(source)
+    # Process routine
+    gyro.process()
+    acce.process()
