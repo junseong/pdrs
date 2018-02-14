@@ -38,10 +38,41 @@ Pratama, Azkario Rizky, and Risanuri Hidayat. "Smartphone-based pedestrian dead 
 		- S. H. Shin, C. G. Park, J. W. Kim, H. S. Hong, J. M. Lee, “Adaptive Step Length Estimation Algorithm Using Low-Cost MEMS Inertial Sensors,” in IEEE Sensors Applications Symposium, 2007. 
 
 Ojeda, Lauro, and Johann Borenstein. "Personal dead-reckoning system for GPS-denied environments." Safety, Security and Rescue Robotics, 2007. SSRR 2007. IEEE International Workshop on. IEEE, 2007.
-    시각화를 통하여 계단 위치를 파악하는 예제가 수록되어 있습니다. 
+	발에 부착한 6축 센서 (각속도, 가속도)를 이용한 PDRS
+	동기 : 시가전을 치르는 군인, 긴급상황에서의 대피
+	다른 장치를 설치하여 위치를 파악하는 방법보다 좋은 점
+		1. 돈, 시간
+		2. 긴급상황이나, 전장에선 사용하기 어려움
+		3. Active radiation 이 필요한데, 이것은 보안에 관련해서 좋지 못함
+	
+	6축센서 (자이로 + 가속도)를 이용한 실시간 PDRS
+	zupt 를 사용하여 오차를 줄였음 -> 결과 2% 정도
+
+	step length 에 관하여 여러가지 접근 방식이 있었음
+	1. 신경망 + 자기장(칼만필터) -> 철제건물 안에서는 필터링이 잘 되지 않았음
+		Cho, S.Y. and Park (C.G., 2006). “MEMS Based Pedestrian Navigation System.” Journal of Navigation, vol. 59, pp. 135?153. 
+	2. 실시간 측정 (초음파센서 사용)
+		Saarinen, J., Suomela, J., Heikkila, Elomaa, M., and Halme, A. (2004). “Personal navigation system.” Proc. 2004 IEEE/RSJ Int. Conf. on Intelligent Robots and Systems, vol 1, pp. 212-217
+	소프트웨어
+		- Position estimation module
+		- ZUPT module
+		- Step detection module
+
+
 
 Jimenez, Antonio R., et al. "A comparison of pedestrian dead-reckoning algorithms using a low-cost MEMS IMU." Intelligent Signal Processing, 2009. WISP 2009. IEEE International Symposium on. IEEE, 2009.
-    신발에 부착한 가속도계로 걸음 수를 측정합니다. 그리고 걸음 당 거리를 추측하는 두 알고리즘을 도입하여서 예상 거리를 추측합니다. 
+    이용 : 방어, 긴급상황, 스마트 오피스
+	9축 센서 (자이로 + 가속도 + 자기)
+
+	Step detection 을 위한 시뮬레이션
+	1. 단방향 이동 (120m)
+	2. 갔다가 돌아오는 이동 (60m 갔다가 180도 돌아서 다시 돌아옴)
+	3. 일반적인 루트 (사각형루트로 30m, 5m 인 이동 -> 총 70m)
+	
+	기본적으로 참고한 논문과 같이 가속도값의 magnitude를 구하고, 이동평균필터를 사용한다.
+	윈도우 값은 15개의 샘플이며, 
+
+
 
 Abdulrahim, Khairi, et al. "Understanding the performance of zero velocity updates in MEMS-based pedestrian navigation." International Journal of Advancements in Technology 5.2 (2014): 53-60.
     ZUPT에 관한 설명입니다.
