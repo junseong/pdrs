@@ -1,5 +1,5 @@
 #init
-import matplotlib  # Graph
+import matplotlib.pyplot as plt  # Graph
 import math        # Square
 from tkinter import *     # Visualization
 from tkinter import ttk
@@ -76,20 +76,34 @@ def SIGMA(data, start, end):
 
 def MAF(data, window):
     result=[]
+    c=1/(2*window+1)
     for i in range(len(data)):
         if i<=window:
-            result.append(SIGMA(data, i, i*2))
-        if i>window and i+window<=len(data):
-            result.append(SIGMA(data, i-window, i+window))
+            result.append(c*SIGMA(data, 0, i*2))
+        elif i>window and i+window<=len(data):
+            result.append(c*SIGMA(data, i-window, i+window))
         else:
-            result.append(SIGMA(data, i*2-len(data), len(data)))
+            result.append(c*SIGMA(data, len(data)-2*i, len(data)))
     return result
 
 def LPF():
     pass
 
-def THRESHOLD():
-    pass
+def THRESHOLD(data, threshold):
+    result=[]
+    for i in range(len(data)):
+        if data[i]>threshold:
+            result.append(5000)
+        else:
+            result.append(0)
+    return result
+
+def dataReady(path):
+    data=open(path, 'r')
+    result=[]
+    for readline in data.readlines():
+        result.append(readline.split('/'))
+    return result
 
 class sensor: # Parent class -> x/y/z raw data, result, threshold result
     def __init__(self):
@@ -114,13 +128,14 @@ class Gyro(sensor):
     def get(self, source):
         super().get(source, 0, self.config)
 
-    def process(self):
+    def process(self): # 1. Get magnitude / 2. Into MAF
         magnitude=[] # Magnitude of 3-axis gyro raw data
         for i in range(len(self.x)):
             magnitude.append(math.sqrt(self.x[i]**2+self.y[i]**2+self.z[i]**2))
         for i in range(len(self.x)):
             magnitude[i]=(magnitude[i]-self.bias)**2
         self.result=MAF(magnitude, 10)
+        self.threshold=THRESHOLD(self.result, 5000)
 
 class Acce(sensor):
     def __init__(self):
@@ -138,6 +153,7 @@ class Acce(sensor):
         for i in range(len(self.x)):
             magnitude[i]=(magnitude[i]-self.bias)**2
         self.result=MAF(magnitude, 10)
+        
 
 class Magn(sensor):
     def __init__(self):
@@ -157,12 +173,6 @@ class Pres(sensor):
         for i in range(len(source)):
             self.x.append(float(source[i][10]))
 
-def dataReady(path):
-    data=open(path, 'r')
-    result=[]
-    for readline in data.readlines():
-        result.append(readline.split('/'))
-    return result
 
 if __name__=="__main__":
     # Initial routine
@@ -180,3 +190,31 @@ if __name__=="__main__":
     # Process routine
     gyro.process()
     acce.process()
+    print(len(gyro.x))
+    print(len(gyro.result))
+    
+
+
+    # Show routine
+    count=[]
+    for i in range(len(gyro.x)):
+        count.append(i*0.01)
+
+    plt.figure(num = 'Data', figsize=(9,6))
+    plt.subplot(121)
+    plt.plot(count, gyro.x)
+    plt.plot(count, gyro.y)
+    plt.plot(count, gyro.z)
+    plt.ylim(-250, 250)
+    plt.xlabel('time')
+    plt.ylabel('dps')
+
+    plt.subplot(122)
+    plt.plot(count, gyro.result)
+    plt.plot(count, gyro.threshold)
+    plt.ylim(0, 50000)
+    plt.xlabel('time')
+    plt.ylabel('magnitude')
+    plt.show()
+
+    print(gyro.threshold)
