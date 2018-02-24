@@ -75,7 +75,12 @@ Jimenez, Antonio R., et al. "A comparison of pedestrian dead-reckoning algorithm
 
 
 Abdulrahim, Khairi, et al. "Understanding the performance of zero velocity updates in MEMS-based pedestrian navigation." International Journal of Advancements in Technology 5.2 (2014): 53-60.
-    ZUPT에 관한 설명입니다.
+    1. Magnitude of total acceleration
+	2. Moving acceleration variance
+	3. Magetometer
+	4. Neral network
+	5. Magnitude of gyro signals
+	위 방법을 통한 stance phase detection
 
 Alzantot, Moustafa, and Moustafa Youssef. "UPTIME: Ubiquitous pedestrian tracking using mobile phones." Wireless Communications and Networking Conference (WCNC), 2012 IEEE. IEEE, 2012.
 
@@ -96,25 +101,3 @@ J. Scarlet, “Enhancing the Performance of Pedometers Using a Single Acceleromet
 H. Weinberg, “Using the ADXL202 in Pedometer and Personal Navigation Applications,” Analog Devices AN-602 Application Note, 2002.
 
 S. H. Shin, C. G. Park, J. W. Kim, H. S. Hong, J. M. Lee, “Adaptive Step Length Estimation Algorithm Using Low-Cost MEMS Inertial Sensors,” in IEEE Sensors Applications Symposium, 2007.
-
-
-# Deep learning 사용이라 아직 적합하지 않음
-Beauregard, Stephane, and Harald Haas. "Pedestrian dead reckoning: A basis for personal positioning." Proceedings of the 3rd Workshop on Positioning, Navigation and Communication. 2006.
-    동기
-		1. 노약자 및 어린이, 재소자, 시각장애인들을 위한 서비스
-		2. 경찰, 소방관등 긴급대응시스템
-		3. 상업적 이용
-		4. 사용자의 위치를 파악하여 전파 자원의 효율적인 사용(핸드오버, 안테나의 조향 라우팅등등)
-	특징
-		1. 가속도계를 통하여 걸음 수를 측정하는 것은 위의 논문 과 같지만, LPF 를 통하여 처리 -> 이동평균 필터와 다른 점 찾기!
-		2. 한 걸음당 가속도 크기의 최대, 최소, 분산을 구하고, 걸음 구간 당 가속도의 합을 적분한다.
-		3. 위의 값들을 신경망을 사용하여 훈련한다.
-		4. 위 과정을 통하여 걸음 거리를 예측 할 수 있다.
-		5. compass 는 고정되어 있음(이 실험에서는 머리에) 따라서 그 방향을 토대로 사용자의 방향을 알 수 있음
-	결론
-		1. 신경망을 사용한 step length estimation 의 결과가 좋았음
-		2. 자세하게 걸음 거리를 모델링 하면 더 나은 결과를 얻어 낼 수 있을 것 임
-		3. 머리에 했을 때 결과가 좋았고, 상체나 허리에 부착하는 경우도 잘 될 것임
-		4. 하지만 가장 보편적인 방법인 핸드백이나, 주머니에 넣고 다니는 방법은 잘 안 될 것임
-		5. 그렇지만 RF 기술이나, 기지국을 이용한 측정과 병행한다면 좋을 것임
-Sun, Zuolei, et al. "Activity classification and dead reckoning for pedestrian navigation with wearable sensors." Measurement science and technology 20.1 (2008): 015203.

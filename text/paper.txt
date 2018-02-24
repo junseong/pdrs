@@ -33,10 +33,10 @@
 
 1. Introduction
 
-2. Hardware
+2. Hardware / System Implementation
 
 3. Software
 
-4. Result
+4. Experiments / Result
 
 5. Conclusion
