@@ -1,5 +1,6 @@
 #init
 import matplotlib.pyplot as plt  # Graph
+from mpl_toolkits import mplot3d
 import numpy
 import math        # Square
 from tkinter import *     # Visualization
@@ -124,14 +125,6 @@ def data_ready(path):
         result.append(readline.split('/'))
     return result
 
-# Location
-
-class point:
-    def __init__(self):
-        self.x=0
-        self.y=0
-        self.z=0
-
 # Sensor
 
 class sensor: # Parent class -> x/y/z raw data, result, threshold result
@@ -240,6 +233,15 @@ class Pres(sensor):
         for i in range(len(self.x)):
             self.result.append(LPF(self.x, i, 0.9))
 
+class Activity:
+    def __init__(self):
+        self.step=[]
+        self.turn=[]
+        self.result=[]
+
+    def get(self, gyro, acce, magn, pres, count):
+        pass
+
 class pdrs_main:
     def __init__(self):
         # Declare
@@ -248,6 +250,7 @@ class pdrs_main:
         self.magn=Magn()
         self.temp=Temp()
         self.pres=Pres()
+        self.activity=Activity()
         # Default data path
         self.source=data_ready("./data/1.txt")
 
@@ -277,6 +280,7 @@ class pdrs_main:
         self.magn=Magn()
         self.temp=Temp()
         self.pres=Pres()
+        self.count=[]
 
     def source_change(self):
         try:
@@ -358,6 +362,16 @@ class pdrs_main:
         plt.ylabel('pressure processed data')
         plt.show()
     
+    def show_map(self):
+        plt.figure()
+
+       
+        ax=plt.axes(projection='3d')
+        ax.set_xlabel('X axis')
+        ax.set_ylabel('Y axis')
+        ax.set_zlabel('Z axis')
+        plt.show()
+
     def main_frame(self):
         # Structure
         self.frame=Tk()
@@ -371,10 +385,11 @@ class pdrs_main:
         self.button_source_change=ttk.Button(self.frame, text="source change", command=self.source_change)
         self.button_source_change.grid(row=0, column=1)
         self.button_show_raw_data=ttk.Button(self.frame, text="Show raw data", command=self.show_raw_data)
-        self.button_show_raw_data.grid(row=1, column=0)
+        self.button_show_raw_data.grid(row=2, column=0)
         self.button_show_processed_data=ttk.Button(self.frame, text="Show processed data", command=self.show_processed_data)
-        self.button_show_processed_data.grid(row=1, column=1)
-        
+        self.button_show_processed_data.grid(row=2, column=1)
+        self.button_show_map=ttk.Button(self.frame, text="Show map", command=self.show_map)
+        self.button_show_map.grid(row=3, column=0)
         self.frame.mainloop()
 
 if __name__=="__main__":
