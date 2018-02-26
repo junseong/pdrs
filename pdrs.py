@@ -104,6 +104,19 @@ def THRESHOLD(data, threshold):
             result.append(0)
     return result
 
+def counter(data):
+    result=0
+    if data[0]==0:
+        for i in range(1, len(data)):
+            if data[i] is not data[i-1]:
+                result=result+1
+        return result/2
+    else:
+        for i in range(1, len(data)):
+            if data[i] is not data[i-1]:
+                result=result+1
+        return (result-1)/2
+
 def data_ready(path):
     data=open(path, 'r')
     result=[]
@@ -156,13 +169,7 @@ class Gyro(sensor):
         self.result=MAF(magnitude, 10)
         # Threshold (Value = 5000)
         self.threshold=THRESHOLD(self.result, 5000)
-        for i in range(len(self.threshold)):
-            if self.threshold[i-1]:
-                if self.threshold[i] is not self.threshold[i-1]:
-                    self.turncount=self.turncount+1
-            else:
-                if self.threshold[i] is not 0:
-                    self.turncount=self.turncount+1
+        self.turncount=counter(self.threshold)
         # Turn direction
         # abs(), max()
         
@@ -193,10 +200,7 @@ class Acce(sensor):
         self.result=MAF(magnitude, 3)
         # Threshold (Value = 0.06)
         self.threshold=THRESHOLD(self.result, 0.02)
-        for i in range(len(self.threshold)):
-            if self.threshold[i-1]:
-                if self.threshold[i]<self.threshold[i-1]:
-                    self.stepcount=self.stepcount+1
+        self.stepcount=counter(self.threshold)
     
     def process2(self):
         # Magnitude of 3-axis acce raw data
@@ -209,12 +213,7 @@ class Acce(sensor):
         self.result=MAF(magnitude, 4)
         # Threshold (Value = 0.06)
         self.threshold=THRESHOLD(self.result, 0.06)
-        for i in range(len(self.threshold)):
-            if self.threshold[i-1]== 0 or self.threshold[i-1]==0.06:
-                if self.threshold[i] is not self.threshold[i-1]:
-                    self.stepcount=self.stepcount+1
-            elif self.threshold[i] is not 0:
-                self.stepcount=self.stepcount+1
+        self.stepcount=counter(self.threshold)
 
 class Magn(sensor):
     def __init__(self):
@@ -249,10 +248,10 @@ class pdrs_main:
         self.magn=Magn()
         self.temp=Temp()
         self.pres=Pres()
+        # Default data path
+        self.source=data_ready("./data/1.txt")
 
     def get(self):
-        # Getting data from default route
-        self.source=data_ready("./data/1.txt")
         self.gyro.get(self.source)
         self.acce.get(self.source)
         self.magn.get(self.source)
@@ -267,22 +266,27 @@ class pdrs_main:
         self.acce.process2()
         self.magn.process()
         self.pres.process()
+        print("gyro turn count")
+        print(self.gyro.turncount)
+        print("step count")
+        print(self.acce.stepcount)
+
+    def empty(self):
+        self.gyro=Gyro()
+        self.acce=Acce()
+        self.magn=Magn()
+        self.temp=Temp()
+        self.pres=Pres()
 
     def source_change(self):
         try:
-            self.source=self.data_ready(self.str)
-            self.gyro.get(self.source)
-            self.acce.get(self.source)
-            self.magn.get(self.source)
-            self.temp.get(self.source)
-            self.pres.get(self.source)
-            self.count=[]
-            for i in range(len(self.gyro.x)):
-                self.count.append(i*0.01)
+            self.source=data_ready(self.str.get())
             print("Source changed")
+            self.empty()
+            self.get()
+            self.process()
         except:
             print("Error")
-        pass
 
     def show_raw_data(self):
         # Gyro
@@ -358,18 +362,18 @@ class pdrs_main:
         # Structure
         self.frame=Tk()
         self.frame.title("PDRS")
-        self.frame.geometry("900x600")
+        self.frame.geometry("300x200")
         # Text input -> source
         self.str=StringVar()
-        self.textbox=ttk.Entry(self.frame, width=20, textvariable=str)
+        self.textbox=ttk.Entry(self.frame, width=20, textvariable=self.str)
         self.textbox.grid(row=0, column=0)
         # Buttons
         self.button_source_change=ttk.Button(self.frame, text="source change", command=self.source_change)
         self.button_source_change.grid(row=0, column=1)
         self.button_show_raw_data=ttk.Button(self.frame, text="Show raw data", command=self.show_raw_data)
-        self.button_show_raw_data.grid(row=0, column=2)
+        self.button_show_raw_data.grid(row=1, column=0)
         self.button_show_processed_data=ttk.Button(self.frame, text="Show processed data", command=self.show_processed_data)
-        self.button_show_processed_data.grid(row=1, column=2)
+        self.button_show_processed_data.grid(row=1, column=1)
         
         self.frame.mainloop()
 
