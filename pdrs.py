@@ -1,5 +1,6 @@
 #init
 import matplotlib.pyplot as plt  # Graph
+import numpy
 import math        # Square
 from tkinter import *     # Visualization
 from tkinter import ttk
@@ -103,12 +104,22 @@ def THRESHOLD(data, threshold):
             result.append(0)
     return result
 
-def dataReady(path):
+def data_ready(path):
     data=open(path, 'r')
     result=[]
     for readline in data.readlines():
         result.append(readline.split('/'))
     return result
+
+# Location
+
+class point:
+    def __init__(self):
+        self.x=0
+        self.y=0
+        self.z=0
+
+# Sensor
 
 class sensor: # Parent class -> x/y/z raw data, result, threshold result
     def __init__(self):
@@ -153,7 +164,8 @@ class Gyro(sensor):
                 if self.threshold[i] is not 0:
                     self.turncount=self.turncount+1
         # Turn direction
-
+        # abs(), max()
+        
 class Acce(sensor):
     def __init__(self):
         super().__init__()
@@ -204,8 +216,6 @@ class Acce(sensor):
             elif self.threshold[i] is not 0:
                 self.stepcount=self.stepcount+1
 
-    
-
 class Magn(sensor):
     def __init__(self):
         super().__init__()
@@ -217,8 +227,6 @@ class Magn(sensor):
     def process(self):
         for i in range(len(self.x)):
             self.result.append(math.sqrt(self.x[i]**2+self.y[i]**2+self.z[i]**2))
-        
-
 
 class Temp(sensor):
     def get(self, source):
@@ -233,65 +241,140 @@ class Pres(sensor):
         for i in range(len(self.x)):
             self.result.append(LPF(self.x, i, 0.9))
 
+class pdrs_main:
+    def __init__(self):
+        # Declare
+        self.gyro=Gyro()
+        self.acce=Acce()
+        self.magn=Magn()
+        self.temp=Temp()
+        self.pres=Pres()
+
+    def get(self):
+        # Getting data from default route
+        self.source=data_ready("./data/1.txt")
+        self.gyro.get(self.source)
+        self.acce.get(self.source)
+        self.magn.get(self.source)
+        self.temp.get(self.source)
+        self.pres.get(self.source)
+        self.count=[]
+        for i in range(len(self.gyro.x)):
+            self.count.append(i*0.01)
+
+    def process(self):
+        self.gyro.process()
+        self.acce.process2()
+        self.magn.process()
+        self.pres.process()
+
+    def source_change(self):
+        try:
+            self.source=self.data_ready(self.str)
+            self.gyro.get(self.source)
+            self.acce.get(self.source)
+            self.magn.get(self.source)
+            self.temp.get(self.source)
+            self.pres.get(self.source)
+            self.count=[]
+            for i in range(len(self.gyro.x)):
+                self.count.append(i*0.01)
+            print("Source changed")
+        except:
+            print("Error")
+        pass
+
+    def show_raw_data(self):
+        # Gyro
+        plt.figure(num='Result', figsize=(12, 6))
+        plt.subplot(321)
+        plt.plot(self.count, self.gyro.x)
+        plt.plot(self.count, self.gyro.y)
+        plt.plot(self.count, self.gyro.z)
+        plt.ylim(-250, 250)
+        plt.xlabel('time')
+        plt.ylabel('Gyro raw data')
+        # Acce
+        plt.subplot(322)
+        plt.plot(self.count, self.acce.x)
+        plt.plot(self.count, self.acce.y)
+        plt.plot(self.count, self.acce.z)
+        plt.ylim(-2, 2)
+        plt.xlabel('time')
+        plt.ylabel('Acceleration raw data')
+        # Magn
+        plt.subplot(323)
+        plt.plot(self.count, self.magn.x)
+        plt.plot(self.count, self.magn.y)
+        plt.plot(self.count, self.magn.z)
+        plt.ylim(-2, 2)
+        plt.xlabel('time')
+        plt.ylabel('Magnetic raw data')
+        # Temp
+        plt.subplot(324)
+        plt.plot(self.count, self.temp.x)
+        plt.ylim(-10, 30)
+        plt.xlabel('time')
+        plt.ylabel('Temperature raw data')
+        # Pressure
+        plt.subplot(325)
+        plt.plot(self.count, self.pres.x)
+        plt.ylim(900, 1100)
+        plt.xlabel('time')
+        plt.ylabel('pressure raw data')
+        plt.show()
+
+    def show_processed_data(self):
+        # Gyro
+        plt.figure(num='Result', figsize=(12, 6))
+        plt.subplot(221)
+        plt.plot(self.count, self.gyro.result)
+        plt.plot(self.count, self.gyro.threshold)
+        plt.ylim(0, 50000)
+        plt.xlabel('time')
+        plt.ylabel('Gyro processed data')
+        # Acce
+        plt.subplot(222)
+        plt.plot(self.count, self.acce.result)
+        plt.plot(self.count, self.acce.threshold)
+        plt.ylim(0, 0.2)
+        plt.xlabel('time')
+        plt.ylabel('Acceleration processed data')
+        # Magn
+        plt.subplot(223)
+        plt.plot(self.count, self.magn.result)
+        plt.ylim(0, 2)
+        plt.xlabel('time')
+        plt.ylabel('Magnetic processed data')
+        # Pressure
+        plt.subplot(224)
+        plt.plot(self.count, self.pres.result)
+        plt.ylim(900, 1100)
+        plt.xlabel('time')
+        plt.ylabel('pressure processed data')
+        plt.show()
+    
+    def main_frame(self):
+        # Structure
+        self.frame=Tk()
+        self.frame.title("PDRS")
+        self.frame.geometry("900x600")
+        # Text input -> source
+        self.str=StringVar()
+        self.textbox=ttk.Entry(self.frame, width=20, textvariable=str)
+        self.textbox.grid(row=0, column=0)
+        # Buttons
+        self.button_source_change=ttk.Button(self.frame, text="source change", command=self.source_change)
+        self.button_source_change.grid(row=0, column=1)
+        self.button_show_raw_data=ttk.Button(self.frame, text="Show raw data", command=self.show_raw_data)
+        self.button_show_raw_data.grid(row=0, column=2)
+        self.button_show_processed_data=ttk.Button(self.frame, text="Show processed data", command=self.show_processed_data)
+        self.button_show_processed_data.grid(row=1, column=2)
+        
+        self.frame.mainloop()
+
 if __name__=="__main__":
-    # Initial routine
-    source=dataReady("./data/1.txt")
-    gyro=Gyro()
-    gyro.get(source)
-    acce=Acce()
-    acce.get(source)
-    magn=Magn()
-    magn.get(source)
-    temp=Temp()
-    temp.get(source)
-    pres=Pres()
-    pres.get(source)
-    # Process routine
-    gyro.process()
-    acce.process2()
-    magn.process()
-    pres.process()
-
-    print(gyro.turncount/2)
-    print(acce.stepcount/2)
-
-
-    # Show routine
-    count=[]
-    for i in range(len(gyro.x)):
-        count.append(i*0.01) # 10 ms per sample
-
-    plt.figure(num='Result', figsize=(12, 6))
-
-    plt.subplot(221)
-    plt.plot(count, gyro.result)
-    plt.plot(count, gyro.threshold)
-    plt.ylim(0, 50000)
-    plt.xlabel('time')
-    plt.ylabel('Gyro result')
-    
-    plt.subplot(222)
-    #plt.plot(count, acce.x)
-    #plt.plot(count, acce.y)
-    #plt.plot(count, acce.z)
-    plt.plot(count, acce.result)
-    plt.plot(count, acce.threshold)
-    #plt.ylim(-2,2)
-    plt.ylim(0, 0.2)
-    plt.xlabel('time')
-    plt.ylabel('Acce result')
-
-    plt.subplot(223)
-    plt.plot(count, pres.x)
-    plt.plot(count, pres.result)
-    plt.ylim(1015, 1020)
-    plt.xlabel('time')
-    plt.ylabel('Pressure result')
-    
-    plt.subplot(224)
-    plt.plot(count, magn.result)
-    plt.ylim(0, 2)
-    plt.xlabel('time')
-    plt.ylabel('Magnetic result')
-
-    plt.show()
+    test=pdrs_main()
+    test.get()
+    test.process()
+    test.main_frame()
