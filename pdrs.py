@@ -219,6 +219,7 @@ class Magn(sensor):
     def process(self):
         for i in range(len(self.x)):
             self.result.append(math.sqrt(self.x[i]**2+self.y[i]**2+self.z[i]**2))
+            self.threshold.append(0)
 
 class Temp(sensor):
     def get(self, source):
@@ -232,16 +233,51 @@ class Pres(sensor):
     def process(self):
         for i in range(len(self.x)):
             self.result.append(LPF(self.x, i, 0.9))
+            self.threshold.append(0)
 
 class Activity:
     def __init__(self):
-        self.step=[]
-        self.turn=[]
         self.result=[]
+        self.x=[0]
+        self.x.append(0)
+        self.y=[0]
+        self.y.append(0)
+        self.z=[0]
+        self.z.append(0)
 
     def get(self, gyro, acce, magn, pres, count):
-        pass
+        for i in range(1, len(count)):
+            if gyro[i] is not gyro[i-1]:
+                self.result.append("T")
+            if acce[i] is not acce[i-1]:
+                self.result.append("W")
 
+        turn=0 
+        x=0
+        y=0
+        z=0
+        for i in range(len(self.result)-1):
+            if self.result[i] is "T" and self.result[i+1] is "T":
+                turn=turn+1
+            if self.result[i] is "W":
+                if i is 0:
+                    x=0.37*math.cos(math.pi*0.5*turn)
+                    y=0.37*math.sin(math.pi*0.5*turn)
+                    z=0
+                    self.x.append(x)
+                    self.y.append(y)
+                    self.z.append(z)
+                else:
+                    x=x+0.37*math.cos(math.pi*0.5*turn)
+                    y=y+0.37*math.sin(math.pi*0.5*turn)
+                    z=z
+                    self.x.append(x)
+                    self.y.append(y)
+                    self.z.append(z)
+
+        print(len(self.x))
+        print(len(self.y))
+        print(len(self.z))
 class pdrs_main:
     def __init__(self):
         # Declare
@@ -273,6 +309,7 @@ class pdrs_main:
         print(self.gyro.turncount)
         print("step count")
         print(self.acce.stepcount)
+        self.activity.get(self.gyro.threshold, self.acce.threshold, self.magn.threshold, self.pres.threshold, self.count)
 
     def empty(self):
         self.gyro=Gyro()
@@ -280,6 +317,7 @@ class pdrs_main:
         self.magn=Magn()
         self.temp=Temp()
         self.pres=Pres()
+        self.activity=Activity()
         self.count=[]
 
     def source_change(self):
@@ -364,9 +402,8 @@ class pdrs_main:
     
     def show_map(self):
         plt.figure()
-
-       
         ax=plt.axes(projection='3d')
+        ax.scatter(self.activity.x, self.activity.y, self.activity.z)
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
         ax.set_zlabel('Z axis')
